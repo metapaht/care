@@ -1,14 +1,177 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <base target="_top">
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://lh5.googleusercontent.com/d/1Jx6pUKUJTLS5nrtBu4gbS1n4TrxzXKlF"/>
-    <title>Metapaht care</title>
+  <meta charset="utf-8" />
+	<link rel="icon" type="image/x-icon" href="/assets/LOGO.png" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Metapaht School</title>
+
+  <!-- Meta refresh เป็น fallback ถ้า JS ถูกปิด -->
+  <meta http-equiv="refresh" content="5; url=https://care.metapaht.ac.th">
+
+  <style>
+    :root{
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      box-sizing:border-box;
+    }
+    .card{
+      width:100%;
+      max-width:720px;
+      background:var(--card);
+      border-radius:14px;
+      box-shadow:0 8px 30px rgba(16,24,40,0.08);
+      padding:28px;
+      text-align:center;
+    }
+    .img-box{
+      width:100%;
+      max-width:420px;
+      margin:0 auto 18px;
+    }
+    .img-box img{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:10px;
+      object-fit:cover;
+      box-shadow:0 6px 18px rgba(15,23,42,0.06);
+    }
+    h1{margin:6px 0 8px; font-size:20px;}
+    p{margin:0 0 14px; color:var(--muted); font-size:14px;}
+    .count{
+      font-weight:600;
+      font-size:18px;
+      color:var(--accent);
+    }
+    .progress{
+      height:8px;
+      background: #e6eefc;
+      border-radius:8px;
+      overflow:hidden;
+      margin-top:14px;
+    }
+    .progress > i{
+      display:block;
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), #60a5fa);
+      border-radius:8px;
+      transition:width 0.2s linear;
+    }
+    .small{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:10px;
+    }
+    .skip{
+      display:inline-block;
+      margin-top:12px;
+      text-decoration:none;
+      color:var(--accent);
+      font-weight:600;
+    }
+    @media (max-width:520px){
+      .card{ padding:18px; border-radius:10px;}
+      h1{ font-size:18px;}
+    }
+  </style>
 </head>
 <body>
-    <iframe style="width: 100%; height: 100vh;" scrolling="yes" src="https://care.metapaht.ac.th/" frameborder="0"></iframe>
+  <div class="wrap">
+    <div class="card" role="dialog" aria-labelledby="title" aria-describedby="desc">
+      <div class="img-box" aria-hidden="false">
+        <!-- แก้ src เป็นรูปที่ต้องการ -->
+        <img src="https://res.cloudinary.com/dhpjlspga/image/upload/v1757483473/profile-pictures/user_29_1757483470621.png
+
+
+" alt="กำลังนำทางไปยัง MPS Care" id="bannerImage">
+      </div>
+
+      <h1 id="title">กำลังไปยัง MPS Care...</h1>
+      <p id="desc">หน้าจะเปลี่ยนภายใน <span class="count" id="countdown">5</span> วินาที</p>
+
+      <div class="progress" aria-hidden="true" title="progress">
+        <i id="progressBar" style="width:0%"></i>
+      </div>
+
+      <div class="small">ถ้าหน้าไม่ได้เปลี่ยนโดยอัตโนมัติ ให้คลิก <a class="skip" id="skipLink" href="https://care.metapaht.ac.th">ไปที่ MPS Care ตอนนี้</a></div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // เปลี่ยนตรงนี้ถ้าต้องการ URL อื่น (ผมแก้จากต้นฉบับเป็นรูปแบบมาตรฐาน)
+      const redirectUrl = 'https://care.metapaht.ac.th';
+      const timeoutSeconds = 5;
+
+      const countdownEl = document.getElementById('countdown');
+      const progressBar = document.getElementById('progressBar');
+      const skipLink = document.getElementById('skipLink');
+
+      // อัปเดตลิงก์ skip เผื่อ meta refresh ถูกเปลี่ยน
+      skipLink.href = redirectUrl;
+
+      let remaining = timeoutSeconds;
+      let elapsed = 0;
+      const tick = 100; // ms resolution for smooth progress
+
+      countdownEl.textContent = remaining;
+
+      const totalTicks = (timeoutSeconds * 1000) / tick;
+      let ticks = 0;
+
+      const interval = setInterval(() => {
+        ticks++;
+        elapsed += tick;
+        // update progress percent
+        const pct = Math.min(100, Math.round((elapsed / (timeoutSeconds * 1000)) * 100));
+        progressBar.style.width = pct + '%';
+
+        // update seconds display every 1000ms
+        if (elapsed % 1000 === 0) {
+          remaining = Math.max(0, timeoutSeconds - Math.floor(elapsed / 1000));
+          countdownEl.textContent = remaining;
+        }
+
+        if (elapsed >= timeoutSeconds * 1000) {
+          clearInterval(interval);
+          // ป้องกันการ redirect ซ้ำ
+          try {
+            // ถ้ามี history.replaceState ก็แทนที่หน้าให้สะอาดก่อน redirect
+            history.replaceState(null, '', '/');
+          } catch (e) {}
+          window.location.replace(redirectUrl);
+        }
+      }, tick);
+
+      // ผู้ใช้คลิกลิงก์ข้าม ให้ไปทันทีและยกเลิก interval
+      skipLink.addEventListener('click', function(){
+        clearInterval(interval);
+      });
+
+      // ปรับภาพตัวอย่าง: ถ้าต้องการแสดงภาพจาก local ให้แทน src ของ <img>
+      // document.getElementById('bannerImage').src = 'your-image-path-or-url.jpg';
+    })();
+  </script>
 </body>
 </html>
